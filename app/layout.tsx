@@ -1,39 +1,26 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+// app/layout.tsx (루트)
+'use client';
+import {  Geist_Mono } from 'next/font/google';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-
-const geistSans = Geist({
+const geistSans = Geist_Mono({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+
+ export default  function RootLayout({ children }: { children: React.ReactNode }) {
 
 
-export const metadata: Metadata = {
-  title: 'UI Playground',
-  description: 'CSS / Scroll / Pin / Demo',
-};
-
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
   return (
-
-      <body
-        className={`${geistSans.variable} ${geistMono.variable}`}
-      >
-        <div className="main-shell">         
-          {children}
-        </div>
+    <html lang="ko" >
+      <body className={`
+        ${geistSans.variable} antialiased
+        ${'pinpage-body-fullscreen' }
+      `}>
+        {children}
       </body>
-
+    </html>
   );
 }
