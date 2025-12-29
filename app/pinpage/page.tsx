@@ -16,7 +16,7 @@ export default function Pinpage() {
       start: "top top",
       end: "+=500",
       pin: true,
-      scrub: true,
+      markers: true,
     });
   }, []);
 
@@ -25,7 +25,7 @@ export default function Pinpage() {
       {/* 🎥 비디오 + 텍스트 완전 구조 */}
       <div 
         ref={videoContainerRef}
-        className="fixed inset-0 z-0 h-screen w-screen"
+        className="fixed inset-0 z-0 h-screen w-screen overflow-hidden"
       >
         {/* 배경 비디오 */}
         <video
@@ -42,7 +42,7 @@ export default function Pinpage() {
         <div className="absolute inset-0 bg-black/60 z-10" />
 
         {/* ✅ 텍스트 (비디오 바로 위) */}
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-8 text-white">
+        <div className="absolute w-screen h-screen inset-0 z-20 flex flex-col items-center justify-center text-center px-8 text-white">
           <h1 className="text-5xl md:text-7xl font-black mb-4 drop-shadow-2xl bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
             Welcome to
           </h1>
@@ -60,7 +60,7 @@ export default function Pinpage() {
         <h3 className="text-5xl text-white">스크롤 테스트 성공!</h3>
       </section>
       <section className="h-screen bg-blue-900 flex items-center justify-center">
-        <h3 className="text-5xl text-white">비디오가 고정되고 있나요?</h3>
+        <h3 className="text-5xl text-white">비디오가 고정되고 있나요? 고정 확인 중 </h3>
       </section>
     </div>
   );
