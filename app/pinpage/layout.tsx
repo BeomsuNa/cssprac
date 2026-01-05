@@ -14,13 +14,13 @@ const geistSans = Geist_Mono({
 
 
   return (
-    <html lang="ko" >
+
       <body className={`
         ${geistSans.variable} antialiased
         ${'pinpage-body-fullscreen' }
       `}>
         {children}
       </body>
-    </html>
+
   );
 }
