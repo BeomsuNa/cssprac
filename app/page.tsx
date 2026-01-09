@@ -1,4 +1,5 @@
 // app/layout.tsx
+'use client'
 import { Button } from '@/components/ui/button';
 import './globals.css';
 import Link from 'next/link';
@@ -9,8 +10,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
-      <body>
+
+      < div>
         <header>
             <h2>해당 링크들을 클릭하세요</h2>
           <nav className='grid grid-rows-2 grid-cols-2 gap-4 '>
@@ -21,7 +22,7 @@ export default function RootLayout({
           </nav>
         </header>
         <main>{children}</main>
-      </body>
-    </html>
+</div>
+
   );
 }

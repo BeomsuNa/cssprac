@@ -1,8 +1,6 @@
 // app/layout.tsx (루트)
-'use client';
+import "./globals.css";
 import {  Geist_Mono } from 'next/font/google';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 const geistSans = Geist_Mono({
   variable: "--font-geist-sans",
