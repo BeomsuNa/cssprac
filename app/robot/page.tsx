@@ -1,17 +1,23 @@
-import RobotScene from '@/components/RobotScene';
+import RobotCanvas from '@/components/3D/RobotCanvas';
+
+export const metadata = {
+  title: 'Future Maze - Robot',
+  description: 'Interactive 3D Robot Interface',
+};
+
 export default function Home() {
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#111]">
+    <main className="fixed w-full h-dvh overflow-hidden bg-[#F5F5F7] z-50 inset-0"> {/* w-screen -> w-full, h-screen -> h-dvh 수정 권장 */}
       
-      {/* 1. 배경 3D 씬 (클라이언트 컴포넌트) */}
-      <RobotScene />
+     <div className="w-full h-full absolute inset-0 z-0 ">
+        <RobotCanvas />
+     </div>
 
-      {/* 2. HTML 오버레이 (SEO 친화적인 정적 컨텐츠) */}
-      <div className="absolute top-0 left-0 p-10 text-white z-10 pointer-events-none">
+      {/* HTML 오버레이 */}
+      <div className="absolute top-0 left-0 p-10 text-black z-10 pointer-events-none">
         <h1 className="text-6xl font-bold m-0 tracking-tighter">FUTRURE MAZE</h1>
         <p className="text-2xl mt-2 opacity-80">CSS PROJECT SITE 3D</p>
         
-        {/* 상호작용 가능한 버튼 예시 (pointer-events-auto 필요) */}
         <button className="mt-8 px-6 py-3 bg-[#00ffcc] text-black font-bold rounded pointer-events-auto hover:bg-white transition-colors">
           Start Project
         </button>
