@@ -97,7 +97,7 @@ export default function RobotScene(props: RobotModelProps) { // 이름 변경 �
       <OptimusRobot />
 
       {/* UI 텍스트 */}
-      <Html position={[1.2, 1.8, 0]} transform occlude distanceFactor={2} style={{ pointerEvents: 'none' }}>
+      <Html position={[0.8, 1.7, 0]} transform occlude distanceFactor={2} style={{ pointerEvents: 'none' }}>
         <div className="flex flex-col items-start gap-1">
           <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm border-l-2 border-[#00ffcc] pl-3 pr-4 py-2 rounded-r-lg">
             <div className="w-2 h-2 rounded-full bg-[#00ffcc] animate-pulse shadow-[0_0_10px_#00ffcc]"></div>
