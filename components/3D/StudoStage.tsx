@@ -14,7 +14,7 @@ export default function StudioStage() {
 
       {/* 3. 바닥 그리드 (공학적 느낌) */}
       <Grid
-        position={[0, -0.5, -0.4]}
+        position={[0, -0.5, -0.2]}
         args={[10, 10]}
         cellSize={0.5}
         cellThickness={0.5}
