@@ -10,39 +10,69 @@ import { useGSAP } from '@gsap/react';
 // --------------------------------------------------------------------------
 // 1. 실제 3D 모델 로드 컴포넌트
 // --------------------------------------------------------------------------
-function OptimusRobot() {
+function OptimusRobot({ isHologram=true }: { isHologram: boolean }) {
   const { scene } = useGLTF('/models/robot.glb');
   const robotRef = useRef<THREE.Group>(null);
   const headBone = useRef<THREE.Object3D | null>(null);
   const spineBone = useRef<THREE.Object3D | null>(null);
 
+const tl = useRef<gsap.core.Timeline | null>(null);
+
   useEffect(() => {
-    scene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
+    // 초기 상태 설정: 모든 재질을 "홀로그램" 상태로 만듦
+scene.traverse((obj) => {
+  if (!(obj instanceof THREE.Mesh)) return;
 
-        if (mesh.material instanceof THREE.MeshStandardMaterial) {
-          mesh.material.metalness = 0.8;
-          mesh.material.roughness = 0.2;
-          mesh.material.envMapIntensity = 1.5;
-        }
-        
-        if (mesh.name.includes('Eye') || mesh.name.includes('Light')) {
-           const mat = mesh.material as THREE.MeshStandardMaterial;
-           mat.emissive = new THREE.Color("#00ffcc");
-           mat.emissiveIntensity = 5;
-           mat.toneMapped = false;
-        }
-      }
-    });
+  const mesh = obj; // 여기서부터 mesh.material 접근 가능
+  const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
 
-    headBone.current = scene.getObjectByName('mixamorig_Head_06')  || scene.getObjectByName('Head') || null;
-    spineBone.current = scene.getObjectByName('mixamorig_Spine_02') || scene.getObjectByName('Spine') || null;
+  mats.forEach((mat) => {
+    if (!(mat instanceof THREE.MeshStandardMaterial)) return;
 
+    mat.emissive = new THREE.Color("#070606");
+    mat.emissiveIntensity = 3;
+    mat.metalness = 0;
+    mat.roughness = 0;
+    mat.transparent = true;
+    mat.opacity = 0.3;
+    mat.needsUpdate = true;
+  });
+});
   }, [scene]);
 
+
+  // ✅ "isHologram" prop이 false가 되면 실체화 애니메이션 시작
+  useGSAP(() => {
+    if (isHologram) return; // 아직 홀로그램 상태면 대기
+
+    if (tl.current) tl.current.kill(); // 기존 애니메이션 있으면 제거
+
+    tl.current = gsap.timeline();
+
+    scene.traverse((obj) => {
+      if (!(obj instanceof THREE.Mesh)) return;
+        const mesh = obj; // 여기서부터 mesh.material 접근 가능
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+
+  mats.forEach((mat) => {
+    if (!(mat instanceof THREE.MeshStandardMaterial)) return;
+  tl.current?.to( mat,{    
+    emissiveIntensity : 0,
+    metalness : 0.8,
+    roughness : 0.2,
+    transparent : true,
+    opacity : 1,
+    duration:3.0,
+    ease:"power3.inOut",
+    onUpdate: () => { mat.needsUpdate = true; }
+  },0)
+  });
+
+});
+
+  }, [isHologram]); // isHologram 값이 바뀔 때 실행
+
+  
   useFrame((state) => {
     const mouseX = state.mouse.x;
     const mouseY = state.mouse.y;
@@ -61,7 +91,7 @@ function OptimusRobot() {
   return <primitive object={scene} ref={robotRef} />;
 }
 
-useGLTF.preload('/models/robot.glb');
+
 
 
 // --------------------------------------------------------------------------
@@ -69,7 +99,7 @@ useGLTF.preload('/models/robot.glb');
 // --------------------------------------------------------------------------
 type RobotModelProps = React.JSX.IntrinsicElements['group'];
 
-export default function RobotScene(props: RobotModelProps) { // 이름 변경 및 export default
+export default function RobotScene({ isHologram, ...props }: { isHologram: boolean } & RobotModelProps) { // 이름 변경 및 export default
   const groupRef = useRef<THREE.Group>(null);
 
   useGSAP(() => {
@@ -94,7 +124,7 @@ export default function RobotScene(props: RobotModelProps) { // 이름 변경 �
   return (
     <group ref={groupRef} {...props} dispose={null}>
       
-      <OptimusRobot />
+      <OptimusRobot isHologram={isHologram} />
 
       {/* UI 텍스트 */}
       <Html position={[0.8, 1.7, 0]} transform occlude distanceFactor={2} style={{ pointerEvents: 'none' }}>
