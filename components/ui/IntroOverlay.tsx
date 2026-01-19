@@ -10,7 +10,7 @@ export default function IntroOverlay() {
     const texts = gsap.utils.toArray(['h1','p']);
     gsap.fromTo(texts, 
       {y:-60, opacity:0, filter: "blur(10px)"},
-      {y: 0,         // 제자리로 돌아옴
+      {y: -10,         // 제자리로 돌아옴
         opacity: 1,   // 완전히 보임
         filter: "blur(0px)", // 블러 제거
         duration: 1.5, // 1.5초 동안 재생
