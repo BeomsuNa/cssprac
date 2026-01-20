@@ -9,7 +9,7 @@ export const metadata = {
 export default function Home() {
 
   return (
-    <main className="fixed w-full h-dvh overflow-hidden bg-[#F5F5F7] z-50 inset-0"> {/* w-screen -> w-full, h-screen -> h-dvh 수정 권장 */}
+    <main className="fixed w-full h-dvh overflow-hidden bg-[#F5F5F7] z-1 inset-0"> {/* w-screen -> w-full, h-screen -> h-dvh 수정 권장 */}
       
      <div className="w-full h-full absolute inset-0 z-0 ">
         <RobotCanvas />

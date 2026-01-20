@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, useGLTF } from '@react-three/drei'; // 필요한 것만 남김
 import * as THREE from 'three';
@@ -101,14 +101,38 @@ type RobotModelProps = React.JSX.IntrinsicElements['group'];
 
 export default function RobotScene({ isHologram, ...props }: { isHologram: boolean } & RobotModelProps) { // 이름 변경 및 export default
   const groupRef = useRef<THREE.Group>(null);
+  const xTo = useRef<gsap.QuickToFunc | null>(null);
+  const yTo = useRef<gsap.QuickToFunc | null>(null);
+
+  const headBone = useRef<THREE.Object3D | null>(null);
+  const spineBone = useRef<THREE.Object3D | null>(null);
+
+  const [mouseTrackingEnabled, setMouseTrackingEnabled] = useState(false);
 
   useGSAP(() => {
+    const head = groupRef.current?.getObjectByName('mixamorigHead')
+    const spine = groupRef.current?.getObjectByName('mixamorigSpine')
+
     if (!groupRef.current) return;
 
+    if (head) {
+      headBone.current=head
+    }
+
+    if (spine) {
+      spineBone.current=spineBone
+    }
     // A. 등장 애니메이션 (위치)
     gsap.fromTo(groupRef.current.position, 
       { y: 0 }, 
-      { y: -1.8, duration: 1, ease: 'power3.out' } // 위치값 StudioStage에 맞게 조정 (-1.2 추천)
+      { y: -1.8, 
+        duration: 1, 
+        ease: 'power3.out', 
+        onComplete: () => {
+          // 실체화 완료 시 마우스 추적 시작
+        setMouseTrackingEnabled(true);
+        }
+       } // 위치값 StudioStage에 맞게 조정 (-1.2 추천)
     );
 
     // B. 등장 애니메이션 (크기)
@@ -119,7 +143,19 @@ export default function RobotScene({ isHologram, ...props }: { isHologram: boole
 
 
 
+    // D. 마우스 추적
+    xTo.current = gsap.quickTo(groupRef.current.rotation, 'y', { duration: 0.8, ease: 'power2' }); // 반응 속도 조절
+    yTo.current = gsap.quickTo(groupRef.current.rotation, 'x', { duration: 0.8, ease: 'power2' });
+
   }, { scope: groupRef });
+
+useFrame((state) => {
+    if (xTo.current && yTo.current) {
+      // 마우스 움직임 범위 조절
+      xTo.current(state.mouse.x * 0.2);
+      yTo.current(-state.mouse.y * 0.1);
+    }
+  });
 
   return (
     <group ref={groupRef} {...props} dispose={null}>
