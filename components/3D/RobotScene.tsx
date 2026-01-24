@@ -9,10 +9,8 @@ import { useGSAP } from '@gsap/react';
 
 type RobotModelProps = React.JSX.IntrinsicElements['group'];
 
-export default function RobotScene({ isHologram, ...props }: { isHologram: boolean } & RobotModelProps) {
+export default function RobotScene({ scene, isHologram, ...props }: { scene: THREE.Group; isHologram: boolean } & RobotModelProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/models/robot.glb');  // 직접 로드
-  
   const headBone = useRef<THREE.Object3D | null>(null);
   const spineBone = useRef<THREE.Object3D | null>(null);
   
@@ -25,6 +23,13 @@ export default function RobotScene({ isHologram, ...props }: { isHologram: boole
   // 1. 모델 로드 후 재질 설정
   useEffect(() => {
     if (!groupRef.current) return;
+    
+    // 메쉬 이름 확인을 위한 로그
+    scene.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        console.log('Mesh name:', obj.name);
+      }
+    });
     
     if (isHologram) {
       groupRef.current.visible = false;
@@ -121,8 +126,8 @@ export default function RobotScene({ isHologram, ...props }: { isHologram: boole
   // 3. 마우스 추적
   useFrame((state) => {
     if (!mouseTrackingEnabled) 
-      {console.log("준비가 되었나?", mouseTrackingEnabled)
-        return;}
+      
+        return;
 
     const mouseX = state.pointer.x;
     const mouseY = state.pointer.y;
