@@ -66,7 +66,7 @@ export default function RobotPartHighlighter({ scene }: RobotPartHighlighterProp
   return (
     <div style={{ 
       position: 'absolute', 
-      top: '50%', 
+      top: '40%', 
       left: '10%', 
       transform: 'translateY(-50%)', 
       pointerEvents: 'auto',
