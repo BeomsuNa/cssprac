@@ -7,15 +7,12 @@ const geistSans = Geist_Mono({
   subsets: ["latin"],
 });
 
-
- export default  function RootLayout({ children }: { children: React.ReactNode }) {
-
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" >
+    <html lang="ko">
       <body className={`
+        main-body-fullscreen
         ${geistSans.variable} antialiased
-        ${'pinpage-body-fullscreen' }
       `}>
         {children}
       </body>
