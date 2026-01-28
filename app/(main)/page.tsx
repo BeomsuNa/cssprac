@@ -27,12 +27,12 @@ export default function Page({
       const letters = textRef.current.querySelectorAll('span');
       tl.fromTo(letters, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 1, stagger: 0.1 });
       
-      tl.fromTo(textRef.current, { y: 0, scale: 1 }, { y: -50, scale: 1.3, duration: 2 });
+      tl.fromTo(textRef.current, { y: -20, scale: 1 }, { y: -100, scale: 1.3, duration: 2 });
     }
 
     // 단계 2: fulltext 아래에서 위로 fade in
     if (fullTextRef.current) {
-      tl.fromTo(fullTextRef.current, { y: 0, opacity: 0 }, { y: -40, opacity: 1, duration: 0.5 }, "+=0.2");
+      tl.fromTo(fullTextRef.current, { y: -20, opacity: 0 }, { y: -80, opacity: 1, duration: 0.5 }, "+=0.2");
     }
 
     // 단계 3: 네비게이션 페이드인 (현재 위치 유지, 한 줄로 정렬)
@@ -40,17 +40,12 @@ export default function Page({
       tl.fromTo(navRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "+=0.1");
     }
 
-    // 로고의 C 글자들에 별도 애니메이션 추가
+    // 로고의 첫 번째 C에만 회전 애니메이션 추가
     if (textRef.current) {
-      const cLetters = textRef.current.querySelectorAll('.char-C');
-      const lastC = textRef.current.querySelector('.char-C-last');
+      const firstC = textRef.current.querySelector('.char-C-first');
 
-      if (cLetters.length) {
-        gsap.to(cLetters, { x: 8, repeat: -1, yoyo: true, duration: 0.6, ease: 'sine.inOut', stagger: 0.1, delay: 0.5 });
-      }
-
-      if (lastC) {
-        gsap.to(lastC, { rotation: 360, duration: 2, repeat: -1, ease: 'linear', transformOrigin: '50% 50%', delay: 0.5 });
+      if (firstC) {
+        gsap.to(firstC, { rotation: 360, duration: 2, repeat: 0, ease: 'power2.inOut', transformOrigin: '50% 50%', delay: 2 });
       }
     }
   }, []);
@@ -58,9 +53,15 @@ export default function Page({
   // 텍스트를 글자별로 span으로 분리
   const renderText = (text: string) => {
     const lastCIndex = text.lastIndexOf('C');
+    const firstCIndex = text.indexOf('C');
     return text.split('').map((char, index) => {
       const isC = char === 'C';
-      const className = isC ? (index === lastCIndex ? 'char-C char-C-last' : 'char-C') : '';
+      let className = '';
+      if (isC) {
+        if (index === firstCIndex) className = 'char-C char-C-first';
+        else if (index === lastCIndex) className = 'char-C char-C-last';
+        else className = 'char-C';
+      }
       return (
         <span key={index} className={className} style={{ display: 'inline-block' }}>
           {char === ' ' ? '\u00A0' : char}
