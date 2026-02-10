@@ -11,8 +11,8 @@ export default function Page({
 }: {
   children: React.ReactNode;
 }) {
-  const fulltext = "WHAT EVERYONE CAN DO ONLY I CAN DO";
-  const logo = "WCIC";
+  const fulltext = "I AM IRONMAN";
+  const logo = "I-I";
   const textRef = useRef<HTMLHeadingElement>(null);
   const fullTextRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -104,7 +104,7 @@ export default function Page({
 
           <div style={{ width: '25vw', display: 'flex', justifyContent: 'center' }}>
             <Button className="bg-transparent border border-white text-white hover:bg-white hover:text-black transition duration-300">
-              <Link href="/csspage">CSS Pag</Link>
+              <Link href="/IronMan">CSS Pag</Link>
             </Button>
           </div>
         </nav>
