@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import '../globals.css';
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, CSSProperties } from 'react';
 import { gsap } from 'gsap';
 
 export default function Page({
@@ -11,8 +11,8 @@ export default function Page({
 }: {
   children: React.ReactNode;
 }) {
-  const fulltext = "I AM IRONMAN";
-  const logo = "I-I";
+  const fulltext = "And You";
+  const logo = "I AM IRONMAN";
   const textRef = useRef<HTMLHeadingElement>(null);
   const fullTextRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -40,30 +40,37 @@ export default function Page({
       tl.fromTo(navRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "+=0.1");
     }
 
-    // 로고의 첫 번째 C에만 회전 애니메이션 추가
-    if (textRef.current) {
-      const firstC = textRef.current.querySelector('.char-C-first');
-
-      if (firstC) {
-        gsap.to(firstC, { rotation: 360, duration: 2, repeat: 0, ease: 'power2.inOut', transformOrigin: '50% 50%', delay: 2 });
-      }
-    }
   }, []);
 
   // 텍스트를 글자별로 span으로 분리
   const renderText = (text: string) => {
-    const lastCIndex = text.lastIndexOf('C');
-    const firstCIndex = text.indexOf('C');
+    // 기본 하이라이트 문자 집합 (모든 해당 문자를 강조)
+    const highlightChars = new Set(['I', 'R', 'O', 'N', 'M', 'A']);
+
+    // 인덱스 기반 하이라이트: 동일 문자가 여러 개일 때 특정 인덱스만 색을 바꾸고 싶을 때 사용
+    // 예: logo의 두 A 중 하나만 강조하려면 아래에 인덱스와 색을 지정하세요.
+    // 현재 예시는 인덱스 2(A)만 빨간색으로 설정합니다.
+    const highlightByIndex = new Map<number, string>([[2, '#ff1a1a']]);
+
+    const defaultColor = '#ff1a1a';
+
     return text.split('').map((char, index) => {
-      const isC = char === 'C';
-      let className = '';
-      if (isC) {
-        if (index === firstCIndex) className = 'char-C char-C-first';
-        else if (index === lastCIndex) className = 'char-C char-C-last';
-        else className = 'char-C';
-      }
+      const upper = char.toUpperCase();
+
+      // 인덱스 기반 우선 적용
+      const indexedColor = highlightByIndex.get(index);
+      const isCharHighlighted = highlightChars.has(upper);
+
+      const style: CSSProperties = {
+        display: 'inline-block',
+        ...(indexedColor ? { color: indexedColor } : {}),
+        ...(!indexedColor && isCharHighlighted ? { color: defaultColor } : {}),
+      };
+
+      const className = indexedColor || isCharHighlighted ? 'font-extrabold' : '';
+
       return (
-        <span key={index} className={className} style={{ display: 'inline-block' }}>
+        <span key={index} className={className} style={style}>
           {char === ' ' ? '\u00A0' : char}
         </span>
       );
@@ -72,8 +79,24 @@ export default function Page({
 
   return (
     <div className="min-h-screen text-white">
-      <section className="flex flex-col items-center justify-center h-screen px-4 pt-16">
-        {/* WCIC 로고 */}
+      {/* Cloudinary 배경 비디오 */}
+      <div className="fixed inset-0 w-full h-screen overflow-hidden z-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+          src="https://res.cloudinary.com/https://player.cloudinary.com/embed/?cloud_name=dwbs7dgsd&public_id=%EC%95%84%EC%9D%B4%EC%96%B8%EB%A7%A8%ED%94%84%EB%A1%9C%ED%86%A0%EC%BD%9C_rl8yvp/video/upload/f_auto,q_auto,vc_auto,fl_progressive/v1/{your_public_id}"
+        >
+          Your browser does not support the video tag.
+        </video>
+        {/* 쉐도우/오버레이 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60"></div>
+      </div>
+
+      {/* 콘텐츠 섹션 */}
+      <section className="relative z-10 flex flex-col items-center justify-center h-screen px-4 pt-16">
         <h1 ref={textRef} className="text-8xl sm:text-8xl md:text-8xl font-bold uppercase tracking-wider mb-8">
           {renderText(logo)}
         </h1>

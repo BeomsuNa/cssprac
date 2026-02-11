@@ -115,17 +115,124 @@ export const useCameraDetection = () => {
 };
 
 // MediaPipe 통합을 위한 훅 (나중에 확장)
-export const useCameraWithMediaPipe = (options: UseCameraOptions = {}) => {
-  const camera = useCamera(options);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+type UseCameraWithMediaPipeOptions = UseCameraOptions & {
+  modelAssetPath?: string;
+  onResults?: (results: any) => void;
+};
 
-  // 나중에 MediaPipe 모델 초기화 및 감지 로직 추가
+export const useCameraWithMediaPipe = (options: UseCameraWithMediaPipeOptions = {}) => {
+  const { modelAssetPath, onResults, ...cameraOptions } = options as UseCameraWithMediaPipeOptions;
+  const camera = useCamera(cameraOptions);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mediapipeInstance = useRef<any>(null);
+  const rafRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (camera.isActive && camera.stream) {
-      // MediaPipe 처리 로직이 여기에 들어갈 예정
-      console.log('Camera stream ready for MediaPipe processing');
+    let mounted = true;
+
+    const initMediaPipe = async () => {
+      if (!camera.isActive || !camera.videoRef.current) return;
+
+      try {
+        const mp = await import('@mediapipe/tasks-vision');
+
+        const fileset = await mp.FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm'
+        );
+
+        const handLandmarker = await mp.HandLandmarker.createFromOptions(fileset, {
+          baseOptions: {
+            modelAssetPath:
+              modelAssetPath ||
+              'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
+          },
+          runningMode: 'VIDEO',
+        });
+
+        mediapipeInstance.current = handLandmarker;
+
+        const loop = async () => {
+          if (!mounted || !camera.videoRef.current) return;
+
+          try {
+            const now = performance.now();
+            const results = handLandmarker.detectForVideo(camera.videoRef.current, now);
+            onResults?.(results);
+
+            const canvas = canvasRef.current;
+            if (canvas && camera.videoRef.current) {
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                canvas.width = camera.videoRef.current.videoWidth || camera.videoRef.current.clientWidth;
+                canvas.height = camera.videoRef.current.videoHeight || camera.videoRef.current.clientHeight;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 손 랜드마크 그리기 (여러 손 처리)
+                const hands = results?.landmarks || results?.landmarks || [];
+                if (hands && hands.length) {
+                  ctx.fillStyle = 'lime';
+                  ctx.strokeStyle = 'rgba(0,255,0,0.6)';
+                  ctx.lineWidth = 2;
+
+                  hands.forEach((landmarks: any[]) => {
+                    // 포인트
+                    landmarks.forEach((lm: any) => {
+                      const x = lm.x * canvas.width;
+                      const y = lm.y * canvas.height;
+                      ctx.beginPath();
+                      ctx.arc(x, y, 3, 0, Math.PI * 2);
+                      ctx.fill();
+                    });
+
+                    // 간단한 연결선 (예: 손가락 연속 연결)
+                    const connections = [
+                      [0, 1, 2, 3, 4],
+                      [0, 5, 6, 7, 8],
+                      [0, 9, 10, 11, 12],
+                      [0, 13, 14, 15, 16],
+                      [0, 17, 18, 19, 20],
+                    ];
+
+                    connections.forEach((chain) => {
+                      ctx.beginPath();
+                      chain.forEach((idx: number, i: number) => {
+                        const lm = landmarks[idx];
+                        if (!lm) return;
+                        const x = lm.x * canvas.width;
+                        const y = lm.y * canvas.height;
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                      });
+                      ctx.stroke();
+                    });
+                  });
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('MediaPipe frame error', e);
+          }
+
+          rafRef.current = requestAnimationFrame(loop);
+        };
+
+        rafRef.current = requestAnimationFrame(loop);
+      } catch (e) {
+        console.error('MediaPipe init error', e);
+      }
+    };
+
+    if (camera.isActive) {
+      initMediaPipe();
     }
-  }, [camera.isActive, camera.stream]);
+
+    return () => {
+      mounted = false;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (mediapipeInstance.current?.close) mediapipeInstance.current.close();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [camera.isActive]);
 
   return {
     ...camera,
