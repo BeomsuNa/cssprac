@@ -32,32 +32,31 @@ export default function PremiumPage() {
       {/* Hero Section */}
       <Hero />
 
-      {/* Vision & Mission */}
-      <VisionMission />
+
 
       {/* Product Lineup */}
-      <ProductLineup />
+      {/* <ProductLineup /> */}
 
       {/* Signature Orbit Interaction */}
-      <OrbitShowcase />
+      {/* <OrbitShowcase /> */}
 
       {/* Applications Grid */}
-      <ApplicationsGrid />
+      {/* <ApplicationsGrid /> */}
 
       {/* Technology Stack */}
-      <TechStack />
+      {/* <TechStack /> */}
 
       {/* Trust & Credibility */}
-      <Trust />
+      {/* <Trust /> */}
 
       {/* News & Insights */}
-      <News />
+      {/* <News /> */}
 
       {/* Final CTA */}
-      <FinalCTA />
+      {/* <FinalCTA /> */}
 
       {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }

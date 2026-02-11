@@ -1,6 +1,9 @@
+'use client'
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import './Hero.css'
+import { CldVideoPlayer } from 'next-cloudinary'
+import 'next-cloudinary/dist/cld-video-player.css'
 
 const Hero: React.FC = () => {
   const headlineRef = useRef<HTMLHeadingElement>(null)
@@ -73,28 +76,29 @@ const Hero: React.FC = () => {
   }, [])
 
   return (
-    <section className="hero-section relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
-      {/* Background Video */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-          src={process.env.NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID as string}
-          poster="/images/hero-poster.jpg"
+    <section className="hero-section relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
+      {/* Background Video - CldVideoPlayer */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <CldVideoPlayer
+        id="hero-video"
+        width="1920"
+        height="1080"
+        src={process.env.NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID as string}
+        autoplay={true}
+ 
+        loop={true}
+        muted={true}
+        controls={false}  
         />
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/70" />
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-black/20 via-black/50 to-black/70 pointer-events-none" />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
         {/* Main Headline */}
         <h1 ref={headlineRef} className="hero-headline text-7xl md:text-8xl font-black uppercase tracking-tighter mb-6 leading-none">
           {/* Character-by-character animation */}
-          {'ENGINEERING TOMORROW'.split('').map((char, i) => (
+          {'I AM IRON MAN'.split('').map((char, i) => (
             <span key={i}>
               {char === ' ' ? '\u00A0' : char}
             </span>
@@ -103,7 +107,7 @@ const Hero: React.FC = () => {
 
         {/* Subheadline */}
         <div ref={subheadlineRef} className="hero-subheadline text-lg md:text-xl font-light tracking-wide max-w-3xl mx-auto mb-10 text-gray-300">
-          Intelligent robotic systems engineered for industries that demand precision, autonomy, and collaboration
+        AND IT's YOUR NEXT TURN
         </div>
 
         {/* CTA Buttons */}
